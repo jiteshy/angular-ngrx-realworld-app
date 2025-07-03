@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Conduit - Angular NgRx RealWorld Application Architecture</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 0;
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      background-color: #f8f9fa;
+    }
+
+    .container {
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      height: 100%;
+    }
+
+    .header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 12px 20px;
+      text-align: center;
+      flex-shrink: 0;
+    }
+
+    .header h1 {
+      margin: 0;
+      font-size: 1.4em;
+      font-weight: 600;
+    }
+
+    .header p {
+      margin: 2px 0 0 0;
+      font-size: 0.9em;
+      opacity: 0.9;
+    }
+
+    .zoom-controls {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #f8f9fa;
+      padding: 8px 20px;
+      border-bottom: 1px solid #dee2e6;
+      flex-shrink: 0;
+    }
+
+    .status-message {
+      font-size: 12px;
+      font-weight: 500;
+    }
+
+    .status-positive {
+      color: #000;
+    }
+
+    .status-negative {
+      color: #dc3545;
+    }
+
+    .zoom-controls-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .usage-hint {
+      font-size: 11px;
+      color: #6c757d;
+    }
+
+    .zoom-buttons {
+      display: flex;
+      gap: 4px;
+    }
+
+    .zoom-btn {
+      background: #007bff;
+      color: white;
+      border: none;
+      padding: 4px 8px;
+      border-radius: 3px;
+      cursor: pointer;
+      font-size: 11px;
+      transition: background-color 0.2s;
+    }
+
+    .zoom-btn:hover {
+      background: #0056b3;
+    }
+
+    #diagram {
+      flex: 1;
+      position: relative;
+      overflow: auto;
+      background: white;
+    }
+
+    .zoom-level-indicator {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background: rgba(0, 123, 255, 0.8);
+      color: white;
+      padding: 4px 8px;
+      border-radius: 3px;
+      font-size: 12px;
+      font-weight: 500;
+      z-index: 1000;
+    }
+
+    .diagram-container {
+      display: inline-block;
+      margin: 0 auto;
+      transform-origin: center center;
+      transition: transform 0.3s ease;
+    }
+
+    .mermaid {
+      margin: 20px;
+    }
+
+    .legend {
+      background: #f8f9fa;
+      border-top: 1px solid #dee2e6;
+      padding: 10px 20px;
+      flex-shrink: 0;
+      max-height: 100px;
+      overflow-y: auto;
+    }
+
+    .legend-grid {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 6px;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px;
+      border-radius: 3px;
+      background: white;
+      border: 1px solid #e9ecef;
+    }
+
+    .legend-color {
+      width: 12px;
+      height: 12px;
+      border-radius: 2px;
+      flex-shrink: 0;
+    }
+
+    .legend-text {
+      font-size: 11px;
+      color: #495057;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>Conduit - Angular NgRx RealWorld Application</h1>
+      <p>System Architecture Diagram</p>
+    </div>
+
+    <div class="zoom-controls">
+      <div class="status-message status-positive">Click components/boxes below to view source files on GitHub</div>
+      <div class="zoom-controls-group">
+        <span class="usage-hint">Use Ctrl/Cmd + mouse wheel or keyboard (+/- keys) to zoom</span>
+        <div class="zoom-buttons">
+          <button class="zoom-btn" onclick="zoomIn()">+ Zoom In</button>
+          <button class="zoom-btn" onclick="zoomOut()">- Zoom Out</button>
+          <button class="zoom-btn" onclick="resetZoom()">Reset</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="diagram">
+      <div class="zoom-level-indicator" id="zoomIndicator">25%</div>
+      <div class="diagram-container">
+        <div class="mermaid">
+flowchart TD
+    subgraph "External Services"
+        API["RealWorld API<br/>real-world-app-39656dff2ddc.herokuapp.com"]
+    end
+
+    subgraph "Angular Application (Conduit)"
+        subgraph "App Layer"
+            App["App Component<br/>(Root)"]
+            Config["App Configuration<br/>(Routing & Providers)"]
+            Layout["Layout Components<br/>(Navbar, Footer)"]
+        end
+
+        subgraph "Feature Libraries"
+            Auth["Auth Library<br/>(Login, Register)"]
+            Articles["Articles Library<br/>(CRUD, List, View)"]
+            Profile["Profile Library<br/>(User Profiles)"]
+            Home["Home Library<br/>(Feed, Tags)"]
+            Settings["Settings Library<br/>(User Settings)"]
+        end
+
+        subgraph "Core Libraries"
+            AuthStore["Auth Store<br/>(NgRx Signals)"]
+            ArticleStore["Article Store<br/>(NgRx Signals)"]
+            ProfileStore["Profile Store<br/>(NgRx Signals)"]
+            ApiService["API Service<br/>(HTTP Client)"]
+            ErrorHandler["Error Handler<br/>(Interceptor)"]
+            Forms["Forms Library<br/>(Validation)"]
+        end
+
+        subgraph "UI Components"
+            Pager["Pager Component"]
+            UIComponents["Reusable UI<br/>Components"]
+        end
+    end
+
+    subgraph "Technology Stack"
+        Angular["Angular 20.0.3<br/>(Standalone Components)"]
+        NgRxSignals["NgRx Signals 20.0.0<br/>(State Management)"]
+        TypeScript["TypeScript 5.8.3"]
+        Nx["Nx 21.2.0<br/>(Monorepo)"]
+        Jest["Jest 29.7.0<br/>(Unit Tests)"]
+        Playwright["Playwright<br/>(E2E Tests)"]
+    end
+
+    %% Main Application Flow
+    App --> Layout
+    App --> Config
+    Config --> AuthStore
+    Config --> ErrorHandler
+
+    %% Feature Integration
+    Layout --> Auth
+    Layout --> Articles
+    Layout --> Profile
+    Layout --> Home
+    Layout --> Settings
+
+    %% Store Connections
+    Auth --> AuthStore
+    Articles --> ArticleStore
+    Profile --> ProfileStore
+    Home --> ArticleStore
+    Settings --> AuthStore
+
+    %% API Integration
+    AuthStore --> ApiService
+    ArticleStore --> ApiService
+    ProfileStore --> ApiService
+    ApiService --> ErrorHandler
+    ApiService --> API
+
+    %% Authentication Flow
+    ApiService -->|"withCredentials: true<br/>(Cookie-based)"| API
+    API -->|"User Session"| ApiService
+
+    %% UI Components Usage
+    Articles --> Pager
+    Profile --> UIComponents
+    Forms --> Auth
+    Forms --> Settings
+
+    %% Technology Dependencies
+    App -.-> Angular
+    AuthStore -.-> NgRxSignals
+    ArticleStore -.-> NgRxSignals
+    ProfileStore -.-> NgRxSignals
+    Config -.-> TypeScript
+    ApiService -.-> TypeScript
+
+    %% Click Events for GitHub Navigation
+    click App href "https://github.com/jiteshy/angular-ngrx-realworld-app/blob/main/apps/conduit/src/app/app.component.ts" _blank
+    click Config href "https://github.com/jiteshy/angular-ngrx-realworld-app/blob/main/apps/conduit/src/app/app.config.ts" _blank
+    click Layout href "https://github.com/jiteshy/angular-ngrx-realworld-app/blob/main/apps/conduit/src/app/layout" _blank
+    click Auth href "https://github.com/jiteshy/angular-ngrx-realworld-app/blob/main/libs/auth" _blank
+    click Articles href "https://github.com/jiteshy/angular-ngrx-realworld-app/blob/main/libs/articles" _blank
+    click Profile href "https://github.com/jiteshy/angular-ngrx-realworld-app/blob/main/libs/profile" _blank
+    click Home href "https://github.com/jiteshy/angular-ngrx-realworld-app/blob/main/libs/home" _blank
+    click Settings href "https://github.com/jiteshy/angular-ngrx-realworld-app/blob/main/libs/settings" _blank
+    click AuthStore href "https://github.com/jiteshy/angular-ngrx-realworld-app/blob/main/libs/auth/data-access/src/auth.store.ts" _blank
+    click ArticleStore href "https://github.com/jiteshy/angular-ngrx-realworld-app/blob/main/libs/articles/data-access/src/articles-list.store.ts" _blank
+    click ProfileStore href "https://github.com/jiteshy/angular-ngrx-realworld-app/blob/main/libs/profile/data-access/src/profile.store.ts" _blank
+    click ApiService href "https://github.com/jiteshy/angular-ngrx-realworld-app/blob/main/libs/core/http-client/src/lib/api.service.ts" _blank
+    click ErrorHandler href "https://github.com/jiteshy/angular-ngrx-realworld-app/blob/main/libs/core/error-handler/src/lib/error-handler-interceptor.service.ts" _blank
+    click Forms href "https://github.com/jiteshy/angular-ngrx-realworld-app/blob/main/libs/core/forms" _blank
+    click Pager href "https://github.com/jiteshy/angular-ngrx-realworld-app/blob/main/libs/ui/components/src/pager" _blank
+    click UIComponents href "https://github.com/jiteshy/angular-ngrx-realworld-app/blob/main/libs/ui/components" _blank
+
+    %% Styling
+    classDef appLayer fill:#e1f5fe,stroke:#01579b,stroke-width:2px
+    classDef featureLib fill:#f3e5f5,stroke:#4a148c,stroke-width:2px
+    classDef coreLib fill:#e8f5e8,stroke:#1b5e20,stroke-width:2px
+    classDef uiLib fill:#fff3e0,stroke:#e65100,stroke-width:2px
+    classDef external fill:#ffebee,stroke:#b71c1c,stroke-width:2px
+    classDef tech fill:#f1f8e9,stroke:#33691e,stroke-width:2px
+
+    class App,Config,Layout appLayer
+    class Auth,Articles,Profile,Home,Settings featureLib
+    class AuthStore,ArticleStore,ProfileStore,ApiService,ErrorHandler,Forms coreLib
+    class Pager,UIComponents uiLib
+    class API external
+    class Angular,NgRxSignals,TypeScript,Nx,Jest,Playwright tech
+        </div>
+      </div>
+    </div>
+
+    <div class="legend">
+      <div class="legend-grid">
+        <div class="legend-item">
+          <div class="legend-color" style="background-color: #e1f5fe; border: 1px solid #01579b;"></div>
+          <span class="legend-text">App Layer</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-color" style="background-color: #f3e5f5; border: 1px solid #4a148c;"></div>
+          <span class="legend-text">Feature Libs</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-color" style="background-color: #e8f5e8; border: 1px solid #1b5e20;"></div>
+          <span class="legend-text">Core Libs</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-color" style="background-color: #fff3e0; border: 1px solid #e65100;"></div>
+          <span class="legend-text">UI Components</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-color" style="background-color: #ffebee; border: 1px solid #b71c1c;"></div>
+          <span class="legend-text">External API</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-color" style="background-color: #f1f8e9; border: 1px solid #33691e;"></div>
+          <span class="legend-text">Technology</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let zoomLevel = 0.25;
+    const minZoom = 0.15;
+    const maxZoom = 3;
+
+    // Initialize Mermaid with loose security for GitHub links
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: 'default',
+      flowchart: { 
+        useMaxWidth: false, 
+        htmlLabels: true 
+      },
+      securityLevel: 'loose'
+    });
+
+    function updateZoom() {
+      const container = document.querySelector('.diagram-container');
+      const indicator = document.getElementById('zoomIndicator');
+      
+      container.style.transform = `scale(${zoomLevel})`;
+      indicator.textContent = Math.round(zoomLevel * 100) + '%';
+    }
+
+    function zoomIn() {
+      if (zoomLevel < maxZoom) {
+        zoomLevel = Math.min(maxZoom, zoomLevel + 0.25);
+        updateZoom();
+      }
+    }
+
+    function zoomOut() {
+      if (zoomLevel > minZoom) {
+        zoomLevel = Math.max(minZoom, zoomLevel - 0.25);
+        updateZoom();
+      }
+    }
+
+    function resetZoom() {
+      zoomLevel = 0.25;
+      updateZoom();
+      centerDiagram();
+    }
+
+    function centerDiagram() {
+      const diagramArea = document.getElementById('diagram');
+      const container = document.querySelector('.diagram-container');
+      
+      setTimeout(() => {
+        const scrollLeft = (diagramArea.scrollWidth - diagramArea.clientWidth) / 2;
+        const scrollTop = (diagramArea.scrollHeight - diagramArea.clientHeight) / 2;
+        
+        diagramArea.scrollLeft = scrollLeft;
+        diagramArea.scrollTop = scrollTop;
+      }, 100);
+    }
+
+    // Keyboard support
+    document.addEventListener('keydown', function(e) {
+      if (e.target.type === 'text' || e.target.type === 'textarea' || e.target.isContentEditable) {
+        return;
+      }
+
+      switch(e.key) {
+        case '+':
+        case '=':
+          e.preventDefault();
+          zoomIn();
+          break;
+        case '-':
+          e.preventDefault();
+          zoomOut();
+          break;
+        case '0':
+          e.preventDefault();
+          resetZoom();
+          break;
+      }
+    });
+
+    // Mouse wheel zoom support
+    document.getElementById('diagram').addEventListener('wheel', function(e) {
+      if (e.ctrlKey || e.metaKey) {
+        e.preventDefault();
+        
+        if (e.deltaY < 0) {
+          zoomIn();
+        } else {
+          zoomOut();
+        }
+      }
+    });
+
+    // Initialize on page load
+    window.addEventListener('load', function() {
+      updateZoom();
+      setTimeout(centerDiagram, 500);
+    });
+  </script>
+</body>
+</html> 
