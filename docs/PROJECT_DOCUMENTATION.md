@@ -1,177 +1,175 @@
-# Conduit - Angular NgRx RealWorld Application
+# Angular NgRx RealWorld Conduit - Project Documentation
 
 ## 1. Project Overview
 
-**Purpose**: A Medium.com clone demonstrating real-world Angular application patterns with article publishing, user authentication, and social interactions.
+**Purpose**: A feature-rich Medium clone blog platform where users can create, read, update, and delete articles, follow other users, and favorite articles.
 
-**Domain**: Social blogging platform serving developers and content creators who want to share technical articles and engage with the community.
+**Domain**: Social blogging and content sharing platform
 
 **Target Users**: 
-- **Content Creators**: Authors writing and publishing technical articles
-- **Readers**: Developers browsing and consuming technical content  
-- **Community Members**: Users interacting through comments, favorites, and following
+- Content creators who want to publish articles
+- Readers who want to discover and engage with content
+- Community members who want to follow authors and curate favorites
 
-**Core Value Proposition**: Showcases modern Angular architecture with NgRx Signals, standalone components, and zoneless change detection while providing a fully functional blogging platform for developers.
+**Core Value Proposition**: Provides a complete modern blogging experience with social features including article authoring, user profiles, following system, and content discovery.
 
 ## 2. Functional Documentation
 
 ### 2.1 Feature Inventory
 
-**Authentication & User Management**
-- **User Role**: Anonymous/Authenticated Users
-- **Primary Use Case**: User registration, login, profile management
-- **Key User Flows**: 
-  1. Register new account with username/email/password
-  2. Login with email/password credentials
-  3. Update profile information in settings
-  4. Logout and clear session
-
 **Article Management**
-- **User Role**: Authenticated Authors
-- **Primary Use Case**: Create, edit, delete articles
-- **Key User Flows**:
-  1. Navigate to editor (requires authentication)
-  2. Create article with title, description, body, tags
-  3. Edit existing articles (author only)
-  4. Delete own articles
+- User role: Authenticated Users
+- Primary use case: Content creation and management
+- Key user flows:
+  1. Create new article with title, description, body, and tags
+  2. Edit existing articles (author only)
+  3. Delete articles (author only)
+  4. View article details with comments
+  5. Favorite/unfavorite articles
 
-**Content Discovery**
-- **User Role**: All Users
-- **Primary Use Case**: Browse and read articles
-- **Key User Flows**:
-  1. View global article feed on homepage
-  2. Filter articles by tags from sidebar
-  3. Switch to personal feed (authenticated users)
-  4. Read full article with markdown rendering
+**User Authentication**
+- User role: Anonymous and Authenticated Users
+- Primary use case: Account management and access control
+- Key user flows:
+  1. Register new account with username, email, password
+  2. Login with email and password
+  3. Update profile settings
+  4. Logout from application
 
 **Social Features**
-- **User Role**: Authenticated Users
-- **Primary Use Case**: Engage with content and authors
-- **Key User Flows**:
-  1. Favorite/unfavorite articles
-  2. Follow/unfollow authors
-  3. Comment on articles
-  4. View user profiles with article history
+- User role: Authenticated Users
+- Primary use case: Social interaction and content discovery
+- Key user flows:
+  1. Follow/unfollow other users
+  2. View user profiles with their articles
+  3. Browse global feed of all articles
+  4. Browse personal feed of followed users' articles
+  5. Add and delete comments on articles
 
-**Profile Management**
-- **User Role**: All Users
-- **Primary Use Case**: View user profiles and content
-- **Key User Flows**:
-  1. Browse author profiles
-  2. View user's published articles
-  3. View user's favorited articles
+**Content Discovery**
+- User role: All Users
+- Primary use case: Finding relevant content
+- Key user flows:
+  1. Browse articles by tags
+  2. Filter articles by popularity
+  3. Search through article listings
+  4. View popular tags
+  5. Paginate through article lists
 
 ### 2.2 User Journey Maps
 
 **Authentication Flow**:
-1. Visit application → Anonymous homepage with global feed
-2. Click login/register → Form submission
-3. Successful authentication → Redirect to homepage (authenticated view)
-4. Access protected features (editor, settings, personal feed)
+1. User visits homepage
+2. Click "Sign in" or "Sign up"
+3. Complete authentication form
+4. Redirect to homepage with authenticated state
+5. Access to protected features unlocked
 
-**Article Creation Journey**:
-1. Login required → Navigate to editor via navbar
-2. Fill article form (title, description, body, tags)
-3. Submit article → Publish and redirect to article view
-4. Share or further edit published content
+**Article Creation Flow**:
+1. Authenticated user clicks "New Article"
+2. Fill in article form (title, description, body, tags)
+3. Submit article
+4. Redirect to article detail view
+5. Article appears in user's profile and global feed
 
-**Content Discovery Flow**:
-1. Homepage visit → Global article feed displayed
-2. Browse sidebar tags or switch to personal feed
-3. Select article → Full article view with author info
-4. Engage via favorites, comments, or author following
+**Social Interaction Flow**:
+1. User discovers article or author
+2. Click to favorite article or follow author
+3. Optimistic UI update provides immediate feedback
+4. Backend synchronization confirms action
+5. Updated state reflects in relevant feeds
 
 ### 2.3 Business Logic Rules
 
-**Data Validation Rules**:
-- Required field validation for email, username, password
-- Article title, description, and body are required
-- No client-side email format validation (server-side only)
+**Article Management Rules**:
+- Only authenticated users can create articles
+- Only article authors can edit or delete their articles
+- Article slug must be unique and URL-friendly
+- Articles require title, description, and body content
+- Tags are optional but recommended for discoverability
 
-**Business Constraints**:
-- Only authenticated users can create/edit/delete articles
-- Users can only modify their own articles  
-- Comments can only be deleted by comment authors
-- Article favoriting requires authentication
+**User Management Rules**:
+- Email addresses must be unique across all users
+- Username must be unique and URL-friendly
+- Password and email fields require basic required validation only
+- User profiles support bio, image, and basic information
 
-**Workflow Dependencies**:
-- Authentication required for: article creation, editing, commenting, favoriting, following
-- User session must be valid for protected operations
-- Article must exist before comments can be added
+**Social Features Rules**:
+- Users cannot follow themselves
+- Users cannot favorite their own articles
+- Comments can only be deleted by their authors
+- Following/unfollowing updates both user's following list and target's followers
 
-**Integration Points**:
-- External RealWorld API: `https://real-world-app-39656dff2ddc.herokuapp.com/api`
-- Markdown rendering for article content (marked library)
-- Cookie-based session management
+**Content Discovery Rules**:
+- Global feed shows all articles in reverse chronological order
+- Personal feed shows articles from followed users only
+- Popular tags are calculated based on article frequency
+- Pagination limits articles to manageable chunks
 
 ## 3. Technical Documentation
 
 ### 3.1 Architecture Overview
 
 **Technology Stack**:
-- **Frontend Framework**: Angular 20.0.3 with standalone components
-- **State Management**: NgRx Signals 20.0.0-beta.0
-- **Build System**: Nx 21.2.0 monorepo workspace
-- **Language**: TypeScript 5.8.3
-- **Styling**: SCSS with component-scoped styles
-- **HTTP Client**: Angular HttpClient with cookie-based authentication
-- **Testing**: Jest 29.7.0 (unit tests) + Playwright 1.36.0 (E2E tests)
-- **Package Manager**: npm (confirmed by package-lock.json presence)
+- Angular 20.0.3 (Latest standalone components)
+- NgRx Signals 20.0.0-beta.0 (State management)
+- TypeScript 5.8.3
+- RxJS 7.8.1 (Reactive programming)
+- Nx 21.2.0 (Monorepo tooling)
+- Marked 5.0.1 (Markdown processing)
+- Jest 29.7.0 (Testing framework)
+- Playwright 1.36.0 (E2E testing)
 
-**Project Structure**: Nx workspace with feature-based library architecture
-```
-apps/conduit/                 # Main application
-libs/
-  ├── auth/                   # Authentication features
-  │   ├── data-access/        # Auth store and services
-  │   └── feature-auth/       # Login/register components
-  ├── articles/               # Article management
-  │   ├── data-access/        # Article stores and services
-  │   ├── feature-article/    # Article view component
-  │   ├── feature-article-edit/ # Article editor
-  │   └── feature-articles-list/ # Article listing
-  ├── profile/                # User profile features
-  ├── home/                   # Homepage with feeds
-  ├── settings/               # User settings
-  ├── core/                   # Shared utilities
-  │   ├── api-types/          # TypeScript interfaces
-  │   ├── http-client/        # HTTP service layer
-  │   ├── error-handler/      # Error handling
-  │   └── forms/              # Form utilities
-  └── ui/components/          # Reusable UI components
-```
+**Project Structure**: Nx monorepo with feature-based library organization
+- Apps contain deployable applications
+- Libs contain reusable feature libraries
+- Shared libraries provide common utilities
 
 **Design Patterns**:
-- **Nx Monorepo**: Feature-based library organization with dependency management
-- **Standalone Components**: Modern Angular component architecture (no NgModules)
-- **Signal-Based State**: NgRx Signals for reactive state management
-- **Lazy Loading**: Route-based code splitting with `loadComponent` and `loadChildren`
-- **Provider Pattern**: Dependency injection with `inject()` function
+- Component-based architecture with standalone components
+- Feature-based modular design
+- Signal-based state management
+- Dependency injection using Angular's DI system
+- Reactive programming with RxJS observables
 
 **Data Flow**:
-1. **Component** → triggers signal store methods via user interactions
-2. **Signal Store** → calls service methods through rxMethod for async operations  
-3. **Service** → makes HTTP requests through ApiService with typed interfaces
-4. **HTTP Client** → communicates with external API using cookie-based authentication
-5. **State Update** → components react to signal changes automatically
+1. User interactions trigger component methods
+2. Components dispatch actions to NgRx Signal stores
+3. Stores manage state updates and side effects
+4. Services handle HTTP communication with backend
+5. Components subscribe to store signals for reactive updates
 
-**Frontend Specific**:
-- **Component Hierarchy**: App → Layout (Navbar/Footer) → Feature Components
-- **State Management**: NgRx Signals with reactive methods (rxMethod, patchState)
-- **Routing Strategy**: Standard routing (not hash-based) with lazy loading
-- **Change Detection**: Zoneless change detection with OnPush strategy
+**Component Hierarchy**:
+- App component serves as root shell
+- Layout components provide navigation structure
+- Feature components handle specific functionality
+- Shared components provide reusable UI elements
+
+**State Management**:
+- NgRx Signals for reactive state management
+- Store-based architecture with clear separation of concerns
+- Optimistic updates for better user experience
+- Error handling and loading states
+
+**Routing Strategy**:
+- Standard path-based routing (not hash-based)
+- Lazy loading for feature modules
+- Modern effect-based authentication guards
+- Resolvers for data pre-loading
 
 ### 3.2 Development Environment
 
 **Prerequisites**:
-- Node.js (compatible with Angular 20.0.3)
-- npm (package manager - verified by package-lock.json presence)
-- Git for version control
+- Node.js (version compatible with Angular 20.0.3)
+- npm (package manager as indicated by package-lock.json)
+- Angular CLI (for global ng commands)
 
 **Installation Steps**:
 ```bash
 # Clone the repository
 git clone https://github.com/jiteshy/angular-ngrx-realworld-app.git
+
+# Navigate to project directory
 cd angular-ngrx-realworld-app
 
 # Install dependencies
@@ -179,137 +177,206 @@ npm install
 
 # Start development server
 npm start
-
-# Application runs on http://localhost:4200
 ```
 
 **Configuration**:
-**Environment Variables**:
-- `environment.ts`: Development configuration with API URL
-- `environment.prod.ts`: Production configuration
-- API URL: `https://real-world-app-39656dff2ddc.herokuapp.com/api` (hardcoded in both environments)
+- Environment configurations in `apps/conduit/src/environments/`
+- Development environment: `environment.ts`
+- Production environment: `environment.prod.ts`
+- API URL configuration required for backend communication
 
 **Common Commands**:
 ```bash
-# Development
-npm start                    # Start dev server
-npm run build               # Build for production
-npm test                    # Run unit tests
-npm run e2e                 # Run E2E tests
+# Development server
+npm start
 
-# Code Quality
-npm run lint                # ESLint code analysis
-npm run format              # Prettier code formatting
+# Build for production
+npm run build
 
-# Nx-specific commands
-npm run affected:test       # Test affected projects
-npm run dep-graph          # View dependency graph
+# Run tests
+npm test
+
+# Run end-to-end tests
+npm run e2e
+
+# Lint code
+npm run lint
+
+# Format code
+npm run format
+
+# Generate dependency graph
+npm run dep-graph
 ```
 
-### 3.3 Code Organization
+### 3.3 Application Configuration
+
+**Required Configuration**:
+- **API Base URL**: Backend API endpoint for all HTTP requests
+- **Environment Variables**: Production/development environment settings
+
+**Configuration Files**:
+- `apps/conduit/src/environments/environment.ts` - Development settings
+- `apps/conduit/src/environments/environment.prod.ts` - Production settings
+
+**Configuration Structure**:
+```typescript
+export const environment = {
+  production: false,
+  api_url: 'https://real-world-app-39656dff2ddc.herokuapp.com/api'
+};
+```
+
+**Configuration Requirements**:
+- **Development**: Local API server or public demo API
+- **Production**: Configured backend API with CORS support
+- **Testing**: Test API endpoints or mock services
+
+### 3.4 Code Organization
 
 **Directory Structure**:
 ```
-apps/conduit/src/
-├── app/
-│   ├── app.component.ts          # Root component
-│   ├── app.config.ts             # Application configuration
-│   └── layout/                   # Layout components (navbar, footer)
-├── environments/                 # Environment configurations
-└── main.ts                      # Application bootstrap
-
-libs/
-├── auth/
-│   ├── data-access/             # Auth store and services
-│   └── feature-auth/            # Login/register components
-├── articles/
-│   ├── data-access/             # Article stores and services
-│   ├── feature-article/         # Article view component
-│   ├── feature-article-edit/    # Article editor
-│   └── feature-articles-list/   # Article listing
-├── core/
-│   ├── api-types/               # TypeScript interfaces
-│   ├── http-client/             # HTTP service layer
-│   ├── error-handler/           # Error handling
-│   └── forms/                   # Form utilities
-└── ui/components/               # Reusable UI components
+angular-ngrx-realworld-app/
+├── apps/
+│   ├── conduit/                 # Main application
+│   └── conduit-e2e/            # E2E tests
+├── libs/
+│   ├── articles/               # Article feature libraries
+│   ├── auth/                   # Authentication libraries
+│   ├── core/                   # Core utilities and services
+│   ├── home/                   # Home page features
+│   ├── profile/                # User profile features
+│   ├── settings/               # User settings features
+│   └── ui/                     # Shared UI components
 ```
+
+**Library Structure**:
+- **data-access**: State management and API services
+- **feature-**: UI components and feature logic
+- **ui/components**: Reusable UI components
 
 **File Naming Conventions**:
-- `*.component.ts` - Angular components
-- `*.service.ts` - Injectable services  
-- `*.store.ts` - NgRx Signal stores
-- `*.model.ts` - TypeScript interfaces/types
-- `*.spec.ts` - Unit tests
-- All files use kebab-case naming
+- Components: `*.component.ts` (kebab-case)
+- Services: `*.service.ts` (kebab-case)
+- Stores: `*.store.ts` (kebab-case)
+- Models: `*.model.ts` (kebab-case)
+- Specs: `*.spec.ts` (kebab-case)
 
 **Import/Export Patterns**:
-- Barrel exports via `index.ts` files
-- Relative imports within libraries
-- Library imports use TypeScript path mapping (`@realworld/feature`)
-- Angular core imports grouped first
+- Barrel exports through `index.ts` files
+- Feature libraries expose public APIs
+- Internal implementation details remain private
 
-**State Management**:
-- **NgRx Signals**: Signal-based reactive state with `signalStore`
-- **Signal Stores**: Feature-specific stores (AuthStore, ArticlesListStore, etc.)
-- **rxMethod**: For handling async operations and side effects
-- **patchState**: For immutable state updates
-- **Computed Signals**: Derived state from store signals
+### 3.5 API Documentation
 
-### 3.4 API Documentation
+**External APIs**:
+This application consumes the RealWorld API specification:
 
-**For Frontend Applications**:
+**API Endpoints Inventory**:
 
-**External APIs**: 
-- **RealWorld API**: Backend REST service for all data operations
-- **Base URL**: `https://real-world-app-39656dff2ddc.herokuapp.com/api`
-- **Authentication**: Cookie-based authentication with credentials
+**Authentication Endpoints**:
+- `POST /api/users/login` - User login
+- `POST /api/users` - User registration
+- `GET /api/user` - Get current user
+- `PUT /api/user` - Update user profile
 
-**API Integration**:
-- **HTTP Service**: `ApiService` wraps Angular HttpClient
-- **Request Format**: JSON with content-type headers
-- **Error Handling**: Global `errorHandlingInterceptor` for HTTP errors
-- **Authentication**: Automatic cookie transmission with `withCredentials: true`
+**Articles Endpoints**:
+- `GET /api/articles` - List articles (with filtering)
+- `GET /api/articles/feed` - Get user's article feed
+- `POST /api/articles` - Create new article
+- `GET /api/articles/:slug` - Get article by slug
+- `PUT /api/articles/:slug` - Update article
+- `DELETE /api/articles/:slug` - Delete article
+- `POST /api/articles/:slug/favorite` - Favorite article
+- `DELETE /api/articles/:slug/favorite` - Unfavorite article
+
+**Comments Endpoints**:
+- `GET /api/articles/:slug/comments` - Get article comments
+- `POST /api/articles/:slug/comments` - Add comment to article
+- `DELETE /api/articles/:slug/comments/:id` - Delete comment
+
+**Profile Endpoints**:
+- `GET /api/profiles/:username` - Get user profile
+- `POST /api/profiles/:username/follow` - Follow user
+- `DELETE /api/profiles/:username/follow` - Unfollow user
+
+**Tags Endpoints**:
+- `GET /api/tags` - Get all tags
+
+**API Service Architecture**:
+- **API Service**: `libs/core/http-client/src/lib/api.service.ts`
+- **HTTP Client Configuration**: Angular HttpClient with interceptors
+- **Base URL Configuration**: Configurable API base URL through environment
+- **Error Handling**: Centralized error handling through interceptors
 
 **Authentication Flow**:
-- Login/Register establishes cookie-based session
-- All HTTP requests include `withCredentials: true` 
-- Session persistence via browser cookies
-- Logout clears session state and redirects
+- JWT token-based authentication
+- Token management handled by authentication service
+- Automatic token inclusion in API requests via HTTP interceptors
+- Session management through NgRx Signals state
 
-**Error Handling**:
-- HTTP errors processed by global interceptor
-- Form validation errors displayed via `FormErrorsStore`
-- User-friendly error notifications with `ListErrorsComponent`
-- Network failures handled gracefully
+**API Integration Patterns**:
+- RxJS Observables for async operations
+- Reactive error handling with retry logic
+- Loading states managed through NgRx Signals
+- Optimistic updates for better UX
 
-### 3.5 Data Management
+### 3.6 Data Management
 
-**For Frontend Applications**:
+**State Management Architecture**:
+- **NgRx Signals**: Modern signal-based state management
+- **Store Structure**: Feature-based store organization
+- **Global State**: Shared across application features
+- **Local State**: Component-specific state management
 
-**Client-Side State**: 
-```typescript
-// Auth State
-interface AuthState {
-  user: User;
-  loggedIn: boolean;
-}
+**Store Documentation**:
 
-// Articles List State  
-interface ArticlesListState {
-  articles: Article[];
-  articlesCount: number;
-  listConfig: ArticlesListConfig;
-}
-```
+**Auth Store** (`libs/auth/data-access/src/auth.store.ts`):
+- **Responsibilities**: User authentication and authorization
+- **State Shape**: Current user, authentication status, loading states
+- **Actions**: Login, logout, register, update profile
+- **Selectors**: Current user, authentication status, loading states
+
+**Articles Store** (`libs/articles/data-access/src/articles-list.store.ts`):
+- **Responsibilities**: Article listing and filtering
+- **State Shape**: Articles array, pagination, filters, loading states
+- **Actions**: Load articles, filter by tag, paginate, favorite/unfavorite
+- **Selectors**: Articles list, pagination info, loading states
+
+**Article Store** (`libs/articles/data-access/src/article.store.ts`):
+- **Responsibilities**: Individual article management
+- **State Shape**: Current article, comments, loading states
+- **Actions**: Load article, update article, add/delete comments
+- **Selectors**: Current article, comments, loading states
+
+**Profile Store** (`libs/profile/data-access/src/profile.store.ts`):
+- **Responsibilities**: User profile management
+- **State Shape**: Profile data, user articles, loading states
+- **Actions**: Load profile, follow/unfollow, load user articles
+- **Selectors**: Profile data, articles, following status
+
+**Home Store** (`libs/home/feature-home/src/home.store.ts`):
+- **Responsibilities**: Home page tag management
+- **State Shape**: Popular tags array
+- **Actions**: Load tags (getTags method)
+- **Selectors**: Popular tags
+
+**Data Flow Patterns**:
+- **Component to Store**: Direct store method calls
+- **Store to API**: Service injection and HTTP calls
+- **Async Operations**: Observable-based with loading states
+- **State Updates**: Immutable updates through signals
+- **Error Handling**: Centralized error state management
 
 **Data Models**:
 ```typescript
+// Core entity interfaces
 interface User {
   email: string;
   username: string;
-  bio: string;
-  image: string;
+  bio?: string;
+  image?: string;
+  token?: string;
 }
 
 interface Article {
@@ -318,225 +385,288 @@ interface Article {
   description: string;
   body: string;
   tagList: string[];
+  createdAt: string;
+  updatedAt: string;
   favorited: boolean;
   favoritesCount: number;
   author: Profile;
 }
+
+interface Profile {
+  username: string;
+  bio?: string;
+  image?: string;
+  following: boolean;
+}
+
+interface Comment {
+  id: number;
+  body: string;
+  createdAt: string;
+  author: Profile;
+}
 ```
 
-**Local Storage**: No client-side persistence used (cookie-based authentication only)
-
 **Data Synchronization**:
-- Signal stores automatically sync with backend via reactive methods
-- Optimistic updates for user interactions (favorites, follows)
-- Manual refresh required for new data (no real-time updates)
+- **Real-time Updates**: Optimistic UI updates
+- **Conflict Resolution**: Server state takes precedence
+- **Offline Support**: Not implemented
+- **Background Sync**: Not implemented
 
 ## 4. Development Guidelines
 
 ### 4.1 Code Standards
 
 **Coding Style**:
-- TypeScript strict mode enabled
 - Single quotes for string literals
 - 2-space indentation
-- ESLint + Prettier for code formatting
-- Component selector prefix: `cdt-`
+- Kebab-case for file names
+- PascalCase for class names
+- camelCase for variables and methods
 
-**Component Standards**:
-- Standalone components (no NgModules)
-- OnPush change detection strategy
-- Signal-based reactive patterns
-- Dependency injection via `inject()` function
-- Meaningful component selectors with `cdt-` prefix
+**Linting and Formatting**:
+- ESLint with Angular-specific rules
+- Prettier for code formatting
+- Husky pre-commit hooks for formatting
+- NgRx-specific linting rules
 
-**TypeScript Guidelines**:
-- Strict typing (avoid `any` type)
-- Interface definitions for all data structures
-- Optional chaining and nullish coalescing operators
-- Template literal strings for multi-line content
+**Testing Requirements**:
+- Jest for unit testing
+- Playwright for E2E testing
+- Test files follow `*.spec.ts` convention
+- Coverage expectations per library
 
 **Git Workflow**:
-- Main branch for production-ready code
-- Feature branches for development
-- Husky pre-commit hooks for code formatting
-- Conventional commit messages encouraged
+- Feature branch workflow
+- Commit message conventions
+- Pull request reviews required
+- Main branch protection
 
 ### 4.2 Testing Strategy
 
-**Unit Tests**: Jest framework with test files found in the codebase
-- **Component Testing**: Shallow rendering with TestBed
-- **Service Testing**: Isolated testing with mocked dependencies  
-- **Store Testing**: Signal store behavior and state transitions
-- **Utility Testing**: Pure functions and helper methods
+**Unit Tests**:
+- Component testing with Angular Testing Utilities
+- Service testing with mock dependencies
+- Store testing with NgRx Signals testing utilities
+- Pipe testing for markdown and utility functions
 
-**Integration Tests**: Angular Testing Library patterns
-- **Component Integration**: Component interaction with services
-- **HTTP Integration**: Service integration with HttpClient
-- **Store Integration**: Component and store interaction patterns
+**Integration Tests**:
+- Component interaction testing
+- API service integration testing
+- Store-service integration testing
+- Form validation testing
 
-**E2E Tests**: Playwright framework
-- **Authentication Flows**: Login, register, logout journeys
-- **Article Management**: Create, edit, delete article workflows
-- **User Interactions**: Comments, favorites, following
-- **Navigation**: Routing and page transitions
+**E2E Tests**:
+- Authentication flow testing
+- Article management workflows
+- Social features testing
+- Navigation and routing testing
 
-**Testing Commands**:
-```bash
-npm test                    # Run all unit tests
-npm run e2e                # Run E2E tests
-# Note: watch mode and coverage commands not configured in this project
-```
+**Testing Files Found**:
+- Component specs: `*.component.spec.ts`
+- Service specs: `*.service.spec.ts`
+- Store specs: `*.store.spec.ts`
+- E2E specs: `apps/conduit-e2e/src/**/*.spec.ts`
 
 ### 4.3 Performance Considerations
 
-**Optimization Strategies**:
-- **Lazy Loading**: Feature modules loaded on-demand via route configuration
-- **OnPush Change Detection**: Explicit change detection for better performance
-- **Zoneless Architecture**: Angular's experimental zoneless change detection
-- **Signal-Based Reactivity**: Fine-grained updates with NgRx Signals
-- **Deferred Views**: Non-critical components loaded lazily (@defer directive)
-
 **Bundle Optimization**:
-- Tree-shaking for unused code elimination
-- Code splitting via lazy routes
-- Angular build optimizations with esbuild
+- Lazy loading for feature modules
+- Tree shaking for unused code
+- Production build optimization
+- Code splitting strategies
+
+**Runtime Performance**:
+- OnPush change detection strategy
+- TrackBy functions for ngFor loops
+- Async pipe for observables
+- Deferrable views for optimization
+
+**Memory Management**:
+- Proper subscription cleanup
+- Component lifecycle management
+- State cleanup on navigation
+- Image optimization strategies
 
 ## 5. Deployment & Operations
 
 ### 5.1 Build Process
 
-**For Frontend Applications**:
-
 **Build Commands**:
 ```bash
-npm run build                    # Development build
-npm run build -- --configuration=production  # Production build
+# Development build
+npm run build
+
+# Production build
+npm run build -- --configuration=production
+
+# Analyze bundle size
+npm run build -- --configuration=production --stats-json
 ```
 
-**Build Configuration**:
-- **Build Tool**: Angular CLI with esbuild for faster builds
-- **Output Directory**: `dist/apps/conduit`
-- **Environment Handling**: File replacement for production builds
-- **Asset Optimization**: Bundling, minification, and hash-based caching
+**Build Outputs**:
+- `dist/apps/conduit/` - Production-ready static assets
+- Optimized JavaScript bundles
+- CSS files with optimization
+- Asset optimization and compression
 
-**Environment-Specific Configurations**:
-- Development: Source maps enabled, optimization disabled
-- Production: File replacement, optimization enabled, no source maps
+**Environment Configuration**:
+- Build-time environment variable injection
+- Configuration based on target environment
+- API URL configuration per environment
 
 ### 5.2 Deployment Process
 
-**For Frontend Applications**:
-
 **Static Hosting**:
-- Application deployable to any static hosting provider
-- Build outputs to `dist/apps/conduit` directory
-- SPA routing requires server configuration for fallback to index.html
-- No environment variable injection at runtime (build-time only)
+- Suitable for Netlify, Vercel, AWS S3, or similar
+- Single-page application hosting requirements
+- Proper routing configuration needed
 
-**Server Requirements**:
-- Static file serving capability
-- HTTPS recommended for secure cookie transmission
-- Proper SPA routing configuration
+**Deployment Steps**:
+1. Build application for production
+2. Configure environment variables
+3. Deploy static assets to hosting platform
+4. Configure routing for SPA
+5. Set up SSL certificates if required
+
+**Environment Variables**:
+- API_URL: Backend API base URL
+- PRODUCTION: Production environment flag
 
 ### 5.3 Monitoring & Debugging
 
-**For Frontend Applications**:
+**Browser Development Tools**:
+- Angular DevTools for component inspection
+- Redux DevTools for state management
+- Network tab for API monitoring
+- Performance profiling tools
 
-**Browser Developer Tools**: Standard debugging with Angular DevTools extension support
-- **Component Inspector**: Angular-specific debugging
-- **State Debugging**: NgRx Signals state inspection
-- **Network Monitoring**: HTTP request/response tracking
+**Error Tracking**:
+- Console error monitoring
+- Network error handling
+- User experience error tracking
+- Performance monitoring
 
-**Error Tracking**: Console logging for errors and HTTP interceptor for API issues
-- **Client-Side Errors**: Browser console logging
-- **API Errors**: Centralized error handling via interceptor
-- **No External Monitoring**: No Sentry or similar tools configured
+**Debugging Strategies**:
+- Component state inspection
+- Store state debugging
+- Network request debugging
+- Performance bottleneck identification
 
 ## 6. Quick Start Guides
 
 ### 6.1 For New Developers
 
 **5-Step Onboarding Process**:
-1. **Setup**: Install Node.js and run `npm install` 
-2. **Development**: Run `npm start` and visit `http://localhost:4200`
-3. **Architecture**: Explore `libs/` structure and signal stores
-4. **Patterns**: Study `AuthStore` and component communication patterns
-5. **Testing**: Run `npm test` to verify environment setup
+1. **Setup Environment**: Install Node.js and clone repository
+2. **Install Dependencies**: Run `npm install`
+3. **Start Development**: Run `npm start`
+4. **Explore Structure**: Review libs organization and app structure
+5. **Make First Change**: Update a component or add a feature
 
-**First Feature Implementation**:
-1. Create library: `nx generate @nx/angular:library feature-example`
-2. Add signal store for state management
-3. Create component with reactive signals
-4. Add lazy route in `app.config.ts`
-5. Test functionality with Jest
+**First Feature to Implement**:
+1. Add a new article tag filter
+2. Create component in appropriate library
+3. Add store actions for tag filtering
+4. Connect component to store
+5. Test functionality and create unit tests
 
 **Common Pitfalls**:
-- Use `patchState()` for state updates, not direct mutation
-- Import dependencies in component `imports` array (standalone components)
-- Use TypeScript path mapping (`@realworld/feature`) for library imports
-- Remember OnPush change detection requirements
+- Forgetting to unsubscribe from observables
+- Not using proper change detection strategies
+- Mixing reactive and imperative patterns
+- Not following library boundaries
 
 ### 6.2 For QA Engineers
 
 **Test Execution**:
 ```bash
-npm test                    # Unit tests with Jest
-npm run e2e                # E2E tests with Playwright
+# Run all unit tests
+npm test
+
+# Run E2E tests
+npm run e2e
+
+# Run specific test suite
+npm test -- --testNamePattern="Article"
 ```
 
 **Key Testing Areas**:
-- **Authentication**: Registration, login, logout flows
-- **Article Management**: CRUD operations and validation
-- **User Interactions**: Comments, favorites, following
-- **Navigation**: Route changes and lazy loading
+- User authentication flows
+- Article CRUD operations
+- Social features (follow, favorite)
+- Navigation and routing
+- Form validation and error handling
 
-**Bug Reporting**: 
-- Include browser version and console errors
-- Provide step-by-step reproduction steps
-- Screenshot/video for UI issues
-- Network logs for API-related problems
+**Test Data Management**:
+- Use demo API for testing
+- Create test users and articles
+- Clean up test data after tests
+- Mock external dependencies
 
 ## 7. Troubleshooting
 
 ### Common Issues
 
-**Installation Problems**:
-```bash
-# Clear npm cache
-npm cache clean --force
-rm -rf node_modules package-lock.json
-npm install
-```
-
-**Development Server Issues**:
-```bash
-# Port conflicts
-npm start -- --port 4201
-
-# Clear Angular cache
-npx ng cache clean
-```
-
-**Build Failures**:
-- Check Angular/TypeScript version compatibility
-- Verify all dependencies match required versions
-- Increase Node.js memory for large builds
+**Build Errors**:
+- **Issue**: Module not found errors
+- **Solution**: Check import paths and library exports
+- **Prevention**: Use barrel exports and proper library structure
 
 **Runtime Errors**:
-- Verify API endpoint accessibility
-- Clear browser cookies for authentication issues
-- Check network connectivity for API calls
+- **Issue**: Cannot read property of undefined
+- **Solution**: Add null checks and optional chaining
+- **Prevention**: Use TypeScript strict mode
+
+**API Connection Issues**:
+- **Issue**: CORS errors or API unavailable
+- **Solution**: Configure API URL and check backend status
+- **Prevention**: Use environment configuration
 
 **Performance Issues**:
-- Use `npm run dep-graph` to analyze dependencies
-- Verify OnPush change detection implementation
-- Check for unsubscribed observables causing memory leaks
+- **Issue**: Slow initial load or navigation
+- **Solution**: Implement lazy loading and optimization
+- **Prevention**: Use Angular performance best practices
 
-**Testing Issues**:
-- Ensure development server is running for E2E tests
-- Clear browser state between test runs
-- Verify Jest configuration in each library
+### Environment Issues
 
----
+**Node.js Version Compatibility**:
+- Ensure Node.js version supports Angular 20.0.3
+- Use Node Version Manager (nvm) for version management
+- Check package.json engines field for requirements
 
-*Documentation generated by analyzing actual codebase implementation. All commands and configurations verified against source code.* 
+**Dependency Issues**:
+- Clear node_modules and reinstall dependencies
+- Check for peer dependency warnings
+- Update dependencies following Angular update guide
+
+### Runtime Errors
+
+**Authentication Errors**:
+- Check JWT token validity and storage
+- Verify API endpoint configuration
+- Confirm user session management
+
+**Navigation Issues**:
+- Check route configuration and guards
+- Verify component lazy loading
+- Confirm routing module imports
+
+**State Management Issues**:
+- Check store initialization and injection
+- Verify action dispatching and handling
+- Confirm selector subscriptions
+
+### Performance Issues
+
+**Bundle Size**:
+- Analyze bundle with webpack-bundle-analyzer
+- Implement code splitting and lazy loading
+- Remove unused dependencies and code
+
+**Memory Leaks**:
+- Check component subscription cleanup
+- Verify store state management
+- Monitor memory usage during development
+
+This documentation provides a comprehensive guide for developers and QA engineers to understand, develop, and maintain the Angular NgRx RealWorld Conduit application. The application demonstrates modern Angular development practices with NgRx Signals for state management and follows the RealWorld specification for a complete blogging platform implementation. 
