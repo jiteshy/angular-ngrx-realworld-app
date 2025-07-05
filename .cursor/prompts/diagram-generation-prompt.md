@@ -141,7 +141,7 @@ Map documented architecture to actual code files:
 **IF NO GitHub URL found**:
 
 - **DO NOT** create any click events in the Mermaid diagram
-- Add error banner to HTML (see HTML requirements below)
+- Show "GitHub repository not configured" message in controls
 - Document which dependency files were checked and found empty
 
 ### Step 4: Visual Design
@@ -287,82 +287,94 @@ This HTML template must be used EXACTLY as specified to ensure consistent diagra
             overflow: hidden;
         }
         
+        .container {
+            background: white;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
         .header {
-            background: #475569;
+            background: #1e293b;
             color: white;
-            padding: 8px 20px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 12px 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
         
-        .header-left h1 {
-            font-size: 1.3rem;
+        .header h1 {
+            font-size: 1.4rem;
             font-weight: 600;
             margin: 0;
         }
         
-        .header-right {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-        }
-        
         .tech-stack {
             display: flex;
-            gap: 6px;
+            gap: 8px;
+            align-items: center;
             flex-wrap: wrap;
         }
         
         .tech-item {
-            background: rgba(255,255,255,0.2);
+            background: #3b82f6;
             color: white;
-            padding: 2px 8px;
-            border-radius: 12px;
-            font-size: 0.7rem;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
             font-weight: 500;
-            backdrop-filter: blur(10px);
         }
+        
+        .tech-item.angular { background: #dd0031; }
+        .tech-item.typescript { background: #3178c6; }
+        .tech-item.rxjs { background: #b7178c; }
+        .tech-item.standalone { background: #42b883; }
+        .tech-item.jest { background: #c21325; }
+        .tech-item.playwright { background: #2d4a3e; }
         
         .legend {
             display: flex;
-            gap: 12px;
+            justify-content: center;
+            align-items: center;
+            padding: 8px 20px;
+            background: #1e293b;
+            gap: 20px;
             flex-wrap: wrap;
         }
         
         .legend-item {
             display: flex;
             align-items: center;
-            gap: 4px;
-            font-size: 0.7rem;
-            color: rgba(255,255,255,0.9);
+            gap: 6px;
+            font-size: 0.75rem;
+            color: white;
         }
         
         .legend-color {
-            width: 8px;
-            height: 8px;
+            width: 12px;
+            height: 12px;
             border-radius: 2px;
         }
         
-        .external { background: #ef4444; }
-        .frontend { background: #3b82f6; }
-        .store { background: #8b5cf6; }
-        .service { background: #f59e0b; }
-        .component { background: #10b981; }
+        .legend-color.external { background: #ef4444; }
+        .legend-color.components { background: #3b82f6; }
+        .legend-color.stores { background: #8b5cf6; }
+        .legend-color.services { background: #10b981; }
+        .legend-color.core { background: #f59e0b; }
         
         .controls {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 6px 20px;
-            background: white;
+            padding: 8px 20px;
+            background: #f1f5f9;
             border-bottom: 1px solid #e2e8f0;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            font-size: 0.8rem;
         }
         
         .controls-left {
-            font-size: 0.75rem;
             color: #64748b;
         }
         
@@ -373,34 +385,33 @@ This HTML template must be used EXACTLY as specified to ensure consistent diagra
         }
         
         .zoom-info {
-            font-size: 0.7rem;
             color: #64748b;
+            font-size: 0.7rem;
         }
         
         .zoom-controls {
             display: flex;
-            gap: 3px;
+            gap: 4px;
         }
         
         .zoom-btn {
-            background: #475569;
-            color: white;
-            border: none;
             padding: 4px 8px;
-            border-radius: 4px;
+            border: 1px solid #d1d5db;
+            background: white;
             cursor: pointer;
+            border-radius: 4px;
             font-size: 0.7rem;
-            font-weight: 500;
-            transition: background 0.2s;
-            min-width: 32px;
+            transition: all 0.2s;
         }
         
         .zoom-btn:hover {
-            background: #334155;
+            background: #f3f4f6;
         }
         
         .zoom-btn.primary {
             background: #3b82f6;
+            color: white;
+            border-color: #3b82f6;
         }
         
         .zoom-btn.primary:hover {
@@ -417,7 +428,7 @@ This HTML template must be used EXACTLY as specified to ensure consistent diagra
         .zoom-indicator {
             position: absolute;
             top: 12px;
-            left: 12px;
+            right: 12px;
             background: rgba(0,0,0,0.7);
             color: white;
             padding: 4px 8px;
@@ -512,38 +523,15 @@ This HTML template must be used EXACTLY as specified to ensure consistent diagra
     </style>
 </head>
 <body>
-    <div class="app-container">
+    <div class="container">
         <div class="header">
-            <div class="header-left">
-                <h1>[Project Name]</h1>
-            </div>
-            <div class="header-right">
-                <div class="tech-stack">
-                    <!-- Add technology items dynamically based on documented stack -->
-                </div>
-                
-                <div class="legend">
-                    <div class="legend-item">
-                        <div class="legend-color external"></div>
-                        <span>External</span>
-                    </div>
-                    <div class="legend-item">
-                        <div class="legend-color frontend"></div>
-                        <span>Components</span>
-                    </div>
-                    <div class="legend-item">
-                        <div class="legend-color store"></div>
-                        <span>Stores</span>
-                    </div>
-                    <div class="legend-item">
-                        <div class="legend-color service"></div>
-                        <span>Services</span>
-                    </div>
-                    <div class="legend-item">
-                        <div class="legend-color component"></div>
-                        <span>Core</span>
-                    </div>
-                </div>
+            <h1>[Project Name]</h1>
+            <div class="tech-stack">
+                <!-- Add technology items dynamically based on documented stack -->
+                <span class="tech-item angular">Angular X.X.X</span>
+                <span class="tech-item typescript">TypeScript X.X.X</span>
+                <span class="tech-item rxjs">RxJS X.X.X</span>
+                <!-- Add more tech items as needed -->
             </div>
         </div>
         
@@ -552,6 +540,8 @@ This HTML template must be used EXACTLY as specified to ensure consistent diagra
                 <!-- IF GitHub URL detected -->
                 💡 Click components to view source code • 
                 <a href="[GitHub URL]" target="_blank" class="github-link">GitHub</a>
+                •
+                <a href="[GitHub URL]/blob/main/docs/PROJECT_DOCUMENTATION.md" target="_blank" class="github-link">📖 Documentation</a>
                 <!-- IF NO GitHub URL -->
                 <!-- GitHub repository not configured, click events disabled. Add repository URL to dependency file. -->
             </div>
@@ -577,14 +567,26 @@ This HTML template must be used EXACTLY as specified to ensure consistent diagra
             </div>
         </div>
 
-        <div class="status-bar">
-            <div class="status-left">
-                <span>[Project Description]</span>
-                <span>•</span>
-                <span>[Key architectural patterns]</span>
+        <div class="legend">
+            <div class="legend-item">
+                <div class="legend-color external"></div>
+                <span>External</span>
             </div>
-            <div class="status-right">
-                <a href="[GitHub URL]/blob/main/docs/PROJECT_DOCUMENTATION.md" target="_blank" class="github-link">📖 View Documentation</a>
+            <div class="legend-item">
+                <div class="legend-color components"></div>
+                <span>Components</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color stores"></div>
+                <span>Stores</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color services"></div>
+                <span>Services</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color core"></div>
+                <span>Core</span>
             </div>
         </div>
     </div>
@@ -795,12 +797,11 @@ This HTML template must be used EXACTLY as specified to ensure consistent diagra
 
 **CONSISTENCY REQUIREMENTS**:
 
-1. **Exact Layout Structure**: Always use the 5-section layout:
-   - Header (gradient background with title and "System Architecture Diagram")
-   - Info sections (Technology Stack + Component Legend)
-   - Zoom controls (GitHub message + zoom buttons)
+1. **Exact Layout Structure**: Always use the 4-section layout:
+   - Header (dark navy background with title and technology badges)
+   - Sub-Header (white background with navigation on left, zoom controls on right)
    - Diagram section (with zoom indicator and scrollable container)
-   - Bottom info (Interactive Features + Architecture Overview)
+   - Legend (dark navy background with component legend)
 
 2. **Exact Styling**: Use the provided CSS exactly as specified:
    - Full-screen layout (100vh, overflow: hidden)
@@ -827,11 +828,66 @@ This HTML template must be used EXACTLY as specified to ensure consistent diagra
    - **IF GitHub URL detected**: Show "Click components/boxes below to view source files on GitHub" + include `securityLevel: 'loose'`
    - **IF NO GitHub URL**: Show "GitHub repository not configured, click events disabled..." + no `securityLevel` config
 
+**CRITICAL DESIGN REQUIREMENTS - MUST FOLLOW EXACTLY**:
+
+### **Header Design (MANDATORY)**:
+- **Background**: Dark navy solid color `#1e293b` (NOT gradient)
+- **Layout**: Two-column layout with flexbox
+  - **Left side**: Project title in white text (h1, 1.4rem, font-weight: 600)
+  - **Right side**: Technology stack badges in a horizontal row
+- **Technology Badges**: 
+  - Colored pills/badges showing tech stack with specific brand colors
+  - Each badge: `padding: 4px 8px`, `border-radius: 4px`, `font-size: 0.75rem`
+  - **Must use exact brand colors for consistency**:
+    - Angular: `#dd0031` (red)
+    - TypeScript: `#3178c6` (blue)
+    - RxJS: `#b7178c` (purple)
+    - Java: `#f89820` (orange)
+    - OpenLiberty: `#0f62fe` (blue)
+    - MicroProfile: `#e11d48` (red)
+    - JPA: `#10b981` (green)
+    - Derby: `#6366f1` (indigo)
+    - JWT: `#8b5cf6` (purple)
+- **Height**: Compact header with 12px padding
+- **NO gradient backgrounds** - use solid dark navy only
+- **Exact Match Required**: Header must match the reference format with project name on left and technology badges on right
+
+### **Sub-Header Design (MANDATORY)**:
+Below the main header, include a sub-header section with:
+- **Background**: White background `#ffffff`
+- **Layout**: Two-column layout with navigation on left, zoom controls on right
+- **Content**: 
+  - **Left side**: "Click components to view source code • GitHub • Documentation"
+  - **Right side**: **ZOOM CONTROLS** (-, zoom%, +, Fit, 100% buttons) + keyboard shortcuts info
+- **Styling**: 
+  - `padding: 8px 16px`
+  - `border-bottom: 1px solid #e2e8f0`
+  - `color: #475569`
+  - `font-size: 0.9rem`
+- **Separators**: Use bullet points (•) between navigation items
+- **Links**: GitHub and Documentation links should be clickable with `color: #0ea5e9`
+- **Zoom Controls**: Blue buttons with zoom functionality integrated into sub-header
+- **CRITICAL**: No separate controls section - zoom controls MUST be in sub-header
+
+### **Legend Design (MANDATORY)**:
+- **Location**: Bottom of page with dark navy background `#1e293b`
+- **Layout**: Horizontal row, centered, with white text
+- **Items**: Show colored dots (12px circles) with component type labels
+- **Colors**: External (#ef4444), Components (#3b82f6), Stores (#8b5cf6), Services (#10b981), Core (#f59e0b)
+
+### **Overall Layout Structure (MANDATORY)**:
+1. **Header** (dark navy background with title + tech badges)
+2. **Sub-Header** (white background with navigation on left, zoom controls on right)
+3. **Diagram viewport** (white background, main content area)
+4. **Legend** (dark navy background with component legend)
+
+**CRITICAL**: Only 4 sections total - NO separate controls section
+
 **Layout Functionality Requirements**:
 
 1. **Full-Screen Layout**: 
    - 100vh height, no margins/padding on body
-   - Gradient background on body
+   - Light gray background `#f8fafc` on body
    - White container filling entire viewport
 
  2. **Intelligent Auto-Fit and Zoom**:
@@ -857,6 +913,31 @@ This HTML template must be used EXACTLY as specified to ensure consistent diagra
     - Multiple zoom modes: Fit Screen, 100% Original, Manual zoom
 
 This template ensures consistent architecture diagram generation across all projects while maintaining professional appearance and optimal user experience.
+
+## **CRITICAL COMPLIANCE REQUIREMENT**
+
+**DO NOT DEVIATE FROM THE DESIGN TEMPLATE ABOVE**
+
+The AI MUST use the exact styling, layout, and structure specified in this prompt. Any deviation from the template (colors, layout, positioning, etc.) is considered a failure to follow instructions.
+
+**Key Requirements (NON-NEGOTIABLE)**:
+- **Header**: Dark navy background `#1e293b` with title on left, tech badges on right
+- **No gradients**: Use solid colors only
+- **Layout**: 4-section structure (header, controls, diagram, legend)
+- **Legend**: Bottom of page with dark navy background
+- **Colors**: Exact color values specified in the CSS
+- **Structure**: Exact HTML structure with `.container`, `.header`, `.controls`, `.diagram-viewport`, `.legend`
+- **Controls**: Light gray background `#f1f5f9` with GitHub and Documentation links
+- **Zoom Indicator**: Top-right corner of diagram area
+
+**MANDATORY DESIGN ELEMENTS**:
+1. **Header Layout**: Two-column flexbox with title (left) and tech stack badges (right)
+2. **Controls Layout**: Light gray bar with navigation links (left) and zoom controls (right)
+3. **Documentation Link**: Always include both GitHub and Documentation links with bullet separator
+4. **Legend Position**: Bottom of page with dark navy background matching header
+5. **Zoom Indicator**: Always positioned in top-right corner of diagram area
+
+**If you are generating a diagram and notice it doesn't match the expected design from the user's reference, STOP and use the exact template provided in this prompt.**
 
 ## Quality Validation
 

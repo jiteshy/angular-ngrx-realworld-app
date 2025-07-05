@@ -508,148 +508,194 @@
         const diagramDefinition = `
 flowchart TD
     %% External Dependencies
-    subgraph "External Dependencies"
+    subgraph "External Layer"
         API["🌐 RealWorld API<br/>real-world-app-39656dff2ddc.herokuapp.com"]:::external
         CDN["🎨 CDN Assets<br/>External CSS & Icons"]:::external
     end
 
-    %% Main Application Layer
+    %% Main Application
     subgraph "Angular Application"
         subgraph "Core App Structure"
             APP["🏠 App Component<br/>Root Shell"]:::frontend
-            LAYOUT["🧭 Layout Components<br/>Navigation Structure"]:::frontend
+            LAYOUT["🧭 Layout Components<br/>Navbar • Footer"]:::frontend
             ROUTER["🗺️ Angular Router<br/>Navigation & Guards"]:::component
         end
 
         %% Feature Libraries
         subgraph "Feature Libraries"
-            %% Authentication Feature
+            %% Authentication
             subgraph "Authentication"
-                AUTH_COMP["👤 Auth Components<br/>Login • Register"]:::frontend
-                AUTH_STORE["🗃️ Auth Store<br/>User State • JWT"]:::store
-                AUTH_SERVICE["🔐 Auth Service<br/>Login • Register • JWT"]:::service
+                AUTH_LOGIN["🔐 Login Component<br/>User Authentication"]:::frontend
+                AUTH_REGISTER["📝 Register Component<br/>User Registration"]:::frontend
+                AUTH_STORE["🗃️ Auth Store<br/>User State • JWT Token"]:::store
+                AUTH_SERVICE["🔐 Auth Service<br/>Login • Register • Token"]:::service
                 AUTH_GUARD["🛡️ Auth Guard<br/>Route Protection"]:::component
             end
 
-            %% Articles Feature
+            %% Articles Management
             subgraph "Articles Management"
-                ARTICLES_COMP["📝 Article Components<br/>List • Detail • Edit"]:::frontend
-                ARTICLES_STORE["🗃️ Articles Store<br/>Article State • Pagination"]:::store
-                ARTICLE_STORE["🗃️ Article Store<br/>Single Article • Comments"]:::store
-                ARTICLES_SERVICE["📰 Articles Service<br/>CRUD • Comments"]:::service
+                ARTICLES_LIST["📋 Article List<br/>Articles Display"]:::frontend
+                ARTICLE_DETAIL["📄 Article Detail<br/>Single Article View"]:::frontend
+                ARTICLE_EDIT["✏️ Article Edit<br/>Create • Update"]:::frontend
+                ARTICLES_STORE["🗃️ Articles Store<br/>List • Pagination"]:::store
+                ARTICLE_STORE["🗃️ Article Store<br/>Detail • Comments"]:::store
+                ARTICLES_SERVICE["📰 Articles Service<br/>CRUD Operations"]:::service
+                ACTIONS_SERVICE["⚡ Actions Service<br/>Favorite • Follow"]:::service
             end
 
-            %% Profile Feature
+            %% Profile Management
             subgraph "User Profiles"
-                PROFILE_COMP["👤 Profile Components<br/>Profile View • Settings"]:::frontend
-                PROFILE_STORE["🗃️ Profile Store<br/>User Profiles • Following"]:::store
-                PROFILE_SERVICE["🔍 Profile Service<br/>User Data • Follow"]:::service
+                PROFILE_COMP["👤 Profile Component<br/>User Profile View"]:::frontend
+                SETTINGS_COMP["⚙️ Settings Component<br/>User Settings"]:::frontend
+                PROFILE_STORE["🗃️ Profile Store<br/>User Data • Articles"]:::store
+                PROFILE_SERVICE["🔍 Profile Service<br/>User Info • Follow"]:::service
             end
 
-            %% Home Feature
+            %% Home & Discovery
             subgraph "Home & Discovery"
-                HOME_COMP["🏡 Home Components<br/>Feed • Tags • Filters"]:::frontend
+                HOME_COMP["🏡 Home Component<br/>Main Feed"]:::frontend
+                TAGS_COMP["🏷️ Tags List<br/>Popular Tags"]:::frontend
                 HOME_STORE["🗃️ Home Store<br/>Tags Management"]:::store
-                HOME_SERVICE["🏷️ Home Service<br/>Popular Tags"]:::service
+                HOME_SERVICE["🏷️ Home Service<br/>Tags Data"]:::service
             end
         end
 
-        %% Core Libraries
+        %% Core Infrastructure
         subgraph "Core Infrastructure"
-            %% HTTP & API
-            subgraph "API Layer"
-                API_SERVICE["🌐 API Service<br/>HTTP Client • Base URL"]:::service
-                HTTP_INTERCEPTOR["🔗 HTTP Interceptor<br/>Auth Headers • Errors"]:::component
+            %% API Layer
+            subgraph "HTTP & API"
+                API_SERVICE["🌐 API Service<br/>HTTP Client Base"]:::service
+                HTTP_INTERCEPTOR["🔗 HTTP Interceptor<br/>Auth • Error Handling"]:::component
                 ERROR_HANDLER["⚠️ Error Handler<br/>Global Error Management"]:::component
             end
 
             %% Forms & Validation
             subgraph "Forms System"
-                FORMS_STORE["📋 Forms Store<br/>Form Errors • Validation"]:::store
+                FORMS_STORE["📋 Forms Store<br/>Error States"]:::store
                 INPUT_ERRORS["❌ Input Errors<br/>Field Validation"]:::component
                 LIST_ERRORS["📄 List Errors<br/>Error Display"]:::component
+                VALIDATION["✅ Validation<br/>Form Logic"]:::component
             end
 
-            %% UI Components
-            subgraph "Shared UI"
-                PAGER["📃 Pager Component<br/>Pagination Controls"]:::frontend
-                PIPES["🔄 Pipes<br/>Markdown • Utilities"]:::component
+            %% Shared Components
+            subgraph "UI Components"
+                PAGER["📃 Pager<br/>Pagination Controls"]:::frontend
+                MARKDOWN_PIPE["📝 Markdown Pipe<br/>Content Rendering"]:::component
+                SHARED_COMPONENTS["🎨 Shared UI<br/>Reusable Components"]:::frontend
             end
         end
 
-        %% Testing Infrastructure
+        %% Testing
         subgraph "Testing Framework"
             UNIT_TESTS["🧪 Unit Tests<br/>Jest • Component Tests"]:::component
             E2E_TESTS["🎭 E2E Tests<br/>Playwright • User Flows"]:::component
+            SPEC_FILES["📊 Test Specs<br/>Service • Store Tests"]:::component
         end
     end
 
-    %% Data Flow Connections
+    %% External API Connections
     API --> API_SERVICE
+    CDN --> APP
+
+    %% Core Data Flow
     API_SERVICE --> HTTP_INTERCEPTOR
     HTTP_INTERCEPTOR --> AUTH_SERVICE
     HTTP_INTERCEPTOR --> ARTICLES_SERVICE
+    HTTP_INTERCEPTOR --> ACTIONS_SERVICE
     HTTP_INTERCEPTOR --> PROFILE_SERVICE
     HTTP_INTERCEPTOR --> HOME_SERVICE
 
-    %% Store Dependencies
-    AUTH_SERVICE --> AUTH_STORE
-    ARTICLES_SERVICE --> ARTICLES_STORE
-    ARTICLES_SERVICE --> ARTICLE_STORE
-    PROFILE_SERVICE --> PROFILE_STORE
-    HOME_SERVICE --> HOME_STORE
-
-    %% Component Dependencies
-    AUTH_COMP --> AUTH_STORE
-    ARTICLES_COMP --> ARTICLES_STORE
-    ARTICLES_COMP --> ARTICLE_STORE
-    PROFILE_COMP --> PROFILE_STORE
-    HOME_COMP --> HOME_STORE
-
-    %% Core App Flow
-    APP --> LAYOUT
-    LAYOUT --> ROUTER
-    ROUTER --> AUTH_GUARD
-    AUTH_GUARD --> AUTH_STORE
-
-    %% Error Handling
+    %% Error Handling Flow
     HTTP_INTERCEPTOR --> ERROR_HANDLER
     ERROR_HANDLER --> FORMS_STORE
     FORMS_STORE --> INPUT_ERRORS
     FORMS_STORE --> LIST_ERRORS
 
-    %% UI Components
-    ARTICLES_COMP --> PAGER
-    ARTICLES_COMP --> PIPES
+    %% Authentication Flow
+    AUTH_SERVICE --> AUTH_STORE
+    AUTH_STORE --> AUTH_LOGIN
+    AUTH_STORE --> AUTH_REGISTER
+    AUTH_STORE --> AUTH_GUARD
+    ROUTER --> AUTH_GUARD
+
+    %% Articles Flow
+    ARTICLES_SERVICE --> ARTICLES_STORE
+    ARTICLES_SERVICE --> ARTICLE_STORE
+    ACTIONS_SERVICE --> ARTICLES_STORE
+    ACTIONS_SERVICE --> ARTICLE_STORE
+    ARTICLES_STORE --> ARTICLES_LIST
+    ARTICLE_STORE --> ARTICLE_DETAIL
+    ARTICLE_STORE --> ARTICLE_EDIT
+
+    %% Profile Flow
+    PROFILE_SERVICE --> PROFILE_STORE
+    PROFILE_STORE --> PROFILE_COMP
+    PROFILE_STORE --> SETTINGS_COMP
+
+    %% Home Flow
+    HOME_SERVICE --> HOME_STORE
+    HOME_STORE --> HOME_COMP
+    HOME_STORE --> TAGS_COMP
+
+    %% App Structure Flow
+    APP --> LAYOUT
+    LAYOUT --> ROUTER
+    ROUTER --> HOME_COMP
+    ROUTER --> ARTICLES_LIST
+    ROUTER --> ARTICLE_DETAIL
+    ROUTER --> PROFILE_COMP
+
+    %% Shared Component Usage
+    ARTICLES_LIST --> PAGER
+    ARTICLE_DETAIL --> MARKDOWN_PIPE
     HOME_COMP --> PAGER
+    ARTICLES_LIST --> SHARED_COMPONENTS
+    ARTICLE_DETAIL --> SHARED_COMPONENTS
+
+    %% Form Integration
+    AUTH_LOGIN --> INPUT_ERRORS
+    AUTH_REGISTER --> INPUT_ERRORS
+    ARTICLE_EDIT --> INPUT_ERRORS
+    SETTINGS_COMP --> INPUT_ERRORS
+    AUTH_LOGIN --> LIST_ERRORS
+    AUTH_REGISTER --> LIST_ERRORS
 
     %% Testing Connections
-    UNIT_TESTS -.-> AUTH_COMP
-    UNIT_TESTS -.-> ARTICLES_COMP
-    UNIT_TESTS -.-> PROFILE_COMP
-    UNIT_TESTS -.-> HOME_COMP
+    UNIT_TESTS -.-> AUTH_SERVICE
+    UNIT_TESTS -.-> ARTICLES_SERVICE
+    UNIT_TESTS -.-> PROFILE_SERVICE
+    UNIT_TESTS -.-> HOME_SERVICE
     E2E_TESTS -.-> APP
+    SPEC_FILES -.-> AUTH_STORE
+    SPEC_FILES -.-> ARTICLES_STORE
+    SPEC_FILES -.-> PROFILE_STORE
 
     %% GitHub Click Events
     click APP href "https://github.com/jiteshy/angular-ngrx-realworld-app/blob/main/apps/conduit/src/app/app.component.ts" _blank
     click LAYOUT href "https://github.com/jiteshy/angular-ngrx-realworld-app/blob/main/apps/conduit/src/app/layout" _blank
     click ROUTER href "https://github.com/jiteshy/angular-ngrx-realworld-app/blob/main/apps/conduit/src/app/app.config.ts" _blank
     
-    click AUTH_COMP href "https://github.com/jiteshy/angular-ngrx-realworld-app/blob/main/libs/auth/feature-auth/src" _blank
+    click AUTH_LOGIN href "https://github.com/jiteshy/angular-ngrx-realworld-app/blob/main/libs/auth/feature-auth/src/login" _blank
+    click AUTH_REGISTER href "https://github.com/jiteshy/angular-ngrx-realworld-app/blob/main/libs/auth/feature-auth/src/register" _blank
     click AUTH_STORE href "https://github.com/jiteshy/angular-ngrx-realworld-app/blob/main/libs/auth/data-access/src/auth.store.ts" _blank
     click AUTH_SERVICE href "https://github.com/jiteshy/angular-ngrx-realworld-app/blob/main/libs/auth/data-access/src/services/auth.service.ts" _blank
     click AUTH_GUARD href "https://github.com/jiteshy/angular-ngrx-realworld-app/blob/main/libs/auth/data-access/src/services/auth-guard.ts" _blank
     
-    click ARTICLES_COMP href "https://github.com/jiteshy/angular-ngrx-realworld-app/blob/main/libs/articles/feature-articles-list/src" _blank
+    click ARTICLES_LIST href "https://github.com/jiteshy/angular-ngrx-realworld-app/blob/main/libs/articles/feature-articles-list/src" _blank
+    click ARTICLE_DETAIL href "https://github.com/jiteshy/angular-ngrx-realworld-app/blob/main/libs/articles/feature-article/src" _blank
+    click ARTICLE_EDIT href "https://github.com/jiteshy/angular-ngrx-realworld-app/blob/main/libs/articles/feature-article-edit/src" _blank
     click ARTICLES_STORE href "https://github.com/jiteshy/angular-ngrx-realworld-app/blob/main/libs/articles/data-access/src/articles-list.store.ts" _blank
     click ARTICLE_STORE href "https://github.com/jiteshy/angular-ngrx-realworld-app/blob/main/libs/articles/data-access/src/article.store.ts" _blank
     click ARTICLES_SERVICE href "https://github.com/jiteshy/angular-ngrx-realworld-app/blob/main/libs/articles/data-access/src/services/articles.service.ts" _blank
+    click ACTIONS_SERVICE href "https://github.com/jiteshy/angular-ngrx-realworld-app/blob/main/libs/articles/data-access/src/services/actions.service.ts" _blank
     
     click PROFILE_COMP href "https://github.com/jiteshy/angular-ngrx-realworld-app/blob/main/libs/profile/feature-profile/src" _blank
+    click SETTINGS_COMP href "https://github.com/jiteshy/angular-ngrx-realworld-app/blob/main/libs/settings/feature-settings/src" _blank
     click PROFILE_STORE href "https://github.com/jiteshy/angular-ngrx-realworld-app/blob/main/libs/profile/data-access/src/profile.store.ts" _blank
     click PROFILE_SERVICE href "https://github.com/jiteshy/angular-ngrx-realworld-app/blob/main/libs/profile/data-access/src/services/profile.service.ts" _blank
     
     click HOME_COMP href "https://github.com/jiteshy/angular-ngrx-realworld-app/blob/main/libs/home/feature-home/src" _blank
+    click TAGS_COMP href "https://github.com/jiteshy/angular-ngrx-realworld-app/blob/main/libs/home/feature-home/src/tags-list" _blank
     click HOME_STORE href "https://github.com/jiteshy/angular-ngrx-realworld-app/blob/main/libs/home/feature-home/src/home.store.ts" _blank
     click HOME_SERVICE href "https://github.com/jiteshy/angular-ngrx-realworld-app/blob/main/libs/home/feature-home/src/home.service.ts" _blank
     
@@ -660,12 +706,15 @@ flowchart TD
     click FORMS_STORE href "https://github.com/jiteshy/angular-ngrx-realworld-app/blob/main/libs/core/forms/src/lib/forms-errors.store.ts" _blank
     click INPUT_ERRORS href "https://github.com/jiteshy/angular-ngrx-realworld-app/blob/main/libs/core/forms/src/lib/input-errors" _blank
     click LIST_ERRORS href "https://github.com/jiteshy/angular-ngrx-realworld-app/blob/main/libs/core/forms/src/lib/list-errors" _blank
+    click VALIDATION href "https://github.com/jiteshy/angular-ngrx-realworld-app/blob/main/libs/core/forms/src/lib" _blank
     
     click PAGER href "https://github.com/jiteshy/angular-ngrx-realworld-app/blob/main/libs/ui/components/src/pager" _blank
-    click PIPES href "https://github.com/jiteshy/angular-ngrx-realworld-app/blob/main/libs/articles/feature-article/src/pipes" _blank
+    click MARKDOWN_PIPE href "https://github.com/jiteshy/angular-ngrx-realworld-app/blob/main/libs/articles/feature-article/src/pipes" _blank
+    click SHARED_COMPONENTS href "https://github.com/jiteshy/angular-ngrx-realworld-app/blob/main/libs/ui/components/src" _blank
     
     click UNIT_TESTS href "https://github.com/jiteshy/angular-ngrx-realworld-app/blob/main/jest.config.ts" _blank
     click E2E_TESTS href "https://github.com/jiteshy/angular-ngrx-realworld-app/blob/main/apps/conduit-e2e" _blank
+    click SPEC_FILES href "https://github.com/jiteshy/angular-ngrx-realworld-app/search?q=*.spec.ts" _blank
 
     %% Styling
     classDef external fill:#fee2e2,stroke:#dc2626,stroke-width:2px,color:#991b1b
